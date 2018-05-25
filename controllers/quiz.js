@@ -243,14 +243,8 @@ exports.randomplay = (req, res, next) =>{
         unsolvedQuizzes = req.session.quizzes;
         //Si no quedan preguntas es que ya se han preguntado todas y el jugador ha ganado
         if(unsolvedQuizzes.length === 0){
-            let score = req.session.score;
-
-            //Ponemos a undefined los valores de sesión para poder volver a jugar
-            req.session.score = undefined; // delete req.session.score
-            req.session.quizzes = undefined; // delete req.session.quizzes
-            
             res.render('quizzes/random_nomore', {
-                score: score
+                score: req.session.score
             });
         }
         //Si quedan preguntas, actualizamos las variables de sesión e imprimimos la siguiente pregunta
@@ -277,16 +271,12 @@ exports.randomcheck = (req, res, next) => {
     //Si la respuesta es correcta cargamos la siguiente
     if (result) {
         let pos = 0;
-        console.log("Sesion: " + req.session.quizzes);
-        console.log("Constante quiz" + quiz);
         for(let i in req.session.quizzes){
             if(req.session.quizzes[i].question == quiz.question){
                 pos = i;
             }
         }
-
-        req.session.score++;
-        score = req.session.score; 
+        score = ++req.session.score; 
         req.session.quizzes.splice(pos, 1); //Quitamos del array la pregunta que acabamos de hacer
 
         res.render('quizzes/random_result', {
