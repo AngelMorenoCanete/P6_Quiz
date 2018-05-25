@@ -153,3 +153,158 @@ exports.check = (req, res, next) => {
         answer
     });
 };
+
+/*
+// GET /quizzes/randomplay
+exports.randomplay = (req, res, next) =>{
+    const {quiz, query} = req;
+
+    const answer = query.answer || "";
+    let nUnresolvedQuizzes = 0;
+    let unresolvedQuizzes = [];
+    
+    //Si quizzes no está definido es que estamos en la primera pregunta y tenemos que inicializar
+    if(req.session.quizzes === undefined){
+        req.session.score =0;
+
+        models.quiz.findAll()
+        .then(quizzes => {            
+            req.session.quizzes = quizzes;
+
+            nUnresolvedQuizzes = req.session.quizzes.length;
+            let randomNumber = Math.floor(Math.random() * nUnresolvedQuizzes); 
+            let question = req.session.quizzes[randomNumber];
+            req.session.quizzes.splice(randomNumber, 1); //Quitamos del array la pregunta que acabamos de hacer
+            res.render('quizzes/random_play', {
+                score: req.session.score,
+                quiz: question
+            });
+        })
+        .catch(err => console.log(err));
+    }
+    //Si está definido es que ya hemos hecho una pregunta antes y no hace falta inicializar
+    else{
+        unresolvedQuizzes = req.session.quizzes;
+        //Si no quedan preguntas es que ya se han preguntado todas y el jugador ha ganado
+        if(unresolvedQuizzes.length === 0){
+            let score = req.session.score;
+
+            //Ponemos a undefined los valores de sesión para poder volver a jugar
+            req.session.score = undefined;
+            req.session.quizzes = undefined;
+            
+            res.render('quizzes/random_nomore', {
+                score
+            });
+        }
+        //Si quedan preguntas, actualizamos las variables de sesión e imprimimos la siguiente pregunta
+        else{
+            nUnresolvedQuizzes = req.session.quizzes.length;
+            let randomNumber = Math.floor(Math.random() * nUnresolvedQuizzes);
+            let question = req.session.quizzes[randomNumber];
+            req.session.quizzes.splice(randomNumber, 1);
+            res.render('quizzes/random_play', {
+                score: req.session.score,
+                quiz: question
+            });
+        }
+    }
+};
+*/
+
+// GET /quizzes/randomplay
+exports.randomplay = (req, res, next) =>{
+    const {quiz, query} = req;
+
+    const answer = query.answer || "";
+    let nUnresolvedQuizzes = 0;
+    let unresolvedQuizzes = [];
+    
+    //Si quizzes no está definido es que estamos en la primera pregunta y tenemos que inicializar
+    if(req.session.quizzes === undefined){
+        req.session.score =0;
+
+        models.quiz.findAll()
+        .then(quizzes => {            
+            req.session.quizzes = quizzes;
+
+            nUnresolvedQuizzes = req.session.quizzes.length;
+            let randomNumber = Math.floor(Math.random() * nUnresolvedQuizzes); 
+            let question = req.session.quizzes[randomNumber];
+            res.render('quizzes/random_play', {
+                score: req.session.score,
+                quiz: question
+            });
+        })
+        .catch(err => console.log(err));
+    }
+    //Si está definido es que ya hemos hecho una pregunta antes y no hace falta inicializar
+    else{
+        unresolvedQuizzes = req.session.quizzes;
+        //Si no quedan preguntas es que ya se han preguntado todas y el jugador ha ganado
+        if(unresolvedQuizzes.length === 0){
+            let score = req.session.score;
+
+            //Ponemos a undefined los valores de sesión para poder volver a jugar
+            req.session.score = undefined; // delete req.session.score
+            req.session.quizzes = undefined; // delete req.session.quizzes
+            
+            res.render('quizzes/random_nomore', {
+                score
+            });
+        }
+        //Si quedan preguntas, actualizamos las variables de sesión e imprimimos la siguiente pregunta
+        else{
+            nUnresolvedQuizzes = req.session.quizzes.length;
+            let randomNumber = Math.floor(Math.random() * nUnresolvedQuizzes);
+            let question = req.session.quizzes[randomNumber];
+            res.render('quizzes/random_play', {
+                score: req.session.score,
+                quiz: question
+            });
+        }
+    }
+};
+
+// GET /quizzes/randomcheck/:quizId?answer=respuesta
+exports.randomcheck = (req, res, next) => {
+    const {quiz, query} = req;
+
+    const answer = query.answer || "";
+    const result = answer.toLowerCase().trim() === quiz.answer.toLowerCase().trim();
+    let score;
+    
+    //Si la respuesta es correcta cargamos la siguiente
+    if (result) {
+        let pos;
+        req.session.quizzes.forEach((elem, i) => {
+            if(elem  === quiz){
+                pos = i;
+            }
+        });
+
+        req.session.score++;
+        score = req.session.score; 
+        req.session.quizzes.splice(pos, 1); //Quitamos del array la pregunta que acabamos de hacer
+
+        res.render('quizzes/random_result', {
+            answer: answer,
+            quiz: quiz,
+            result: result,
+            score: score
+        });
+    }else{
+        score = req.session.score;
+        req.session.quizzes = undefined; // delete req.session.quizzes;
+        req.session.score = undefined; // delete req.session.score;
+        
+        res.render('quizzes/random_result', {
+                answer: answer,
+                quiz: quiz,
+                result: result,
+                score: score
+        });
+    }
+    
+
+};
