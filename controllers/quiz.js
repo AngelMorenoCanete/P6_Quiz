@@ -212,6 +212,7 @@ exports.randomcheck = (req, res, next) => {
     const answer = query.answer || "";
     const result = answer.toLowerCase().trim() === quiz.answer.toLowerCase().trim();
     let score;
+    let score2;
     
     //Si la respuesta es correcta cargamos la siguiente
     if (result) {
