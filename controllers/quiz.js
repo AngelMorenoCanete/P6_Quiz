@@ -280,7 +280,7 @@ exports.randomcheck = (req, res, next) => {
         console.log("Sesion: " + req.session.quizzes);
         console.log("Constante quiz" + quiz);
         for(let i in req.session.quizzes){
-            if(req.session.quizzes[i] == quiz){
+            if(req.session.quizzes[i].question == quiz.question){
                 pos = i;
             }
         }
