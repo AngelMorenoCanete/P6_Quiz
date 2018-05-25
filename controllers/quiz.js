@@ -161,6 +161,7 @@ exports.randomplay = (req, res, next) =>{
     const answer = query.answer || "";
     let nUnsolvedQuizzes = 0;
     let unsolvedQuizzes = [];
+    let score;
     
     //Si quizzes no está definido es que estamos en la primera pregunta y tenemos que inicializar
     if(req.session.quizzes === undefined){
@@ -173,7 +174,7 @@ exports.randomplay = (req, res, next) =>{
             nUnsolvedQuizzes = req.session.quizzes.length;
             let randomNumber = Math.floor(Math.random() * nUnsolvedQuizzes); 
             let question = req.session.quizzes[randomNumber];
-            let score = req.session.score;
+            score = req.session.score;
             res.render('quizzes/random_play', {
                 score: score,
                 quiz: question
@@ -186,7 +187,7 @@ exports.randomplay = (req, res, next) =>{
         unsolvedQuizzes = req.session.quizzes;
         //Si no quedan preguntas es que ya se han preguntado todas y el jugador ha ganado
         if(unsolvedQuizzes.length === 0){
-            let score = req.session.score;
+            score = req.session.score;
             res.render('quizzes/random_nomore', {
                 score: score
             });
@@ -196,7 +197,7 @@ exports.randomplay = (req, res, next) =>{
             nUnsolvedQuizzes = req.session.quizzes.length;
             let randomNumber = Math.floor(Math.random() * nUnsolvedQuizzes);
             let question = req.session.quizzes[randomNumber];
-            let score = req.session.score
+            score = req.session.score;
             res.render('quizzes/random_play', {
                 score: score,
                 quiz: question
@@ -212,7 +213,6 @@ exports.randomcheck = (req, res, next) => {
     const answer = query.answer || "";
     const result = answer.toLowerCase().trim() === quiz.answer.toLowerCase().trim();
     let score;
-    let score2;
     
     //Si la respuesta es correcta cargamos la siguiente
     if (result) {
