@@ -276,7 +276,7 @@ exports.randomcheck = (req, res, next) => {
     
     //Si la respuesta es correcta cargamos la siguiente
     if (result) {
-        let pos;
+        let pos = 0;
         console.log("Sesion: " + req.session.quizzes);
         console.log("Constante quiz" + quiz);
         for(let i in req.session.quizzes){
