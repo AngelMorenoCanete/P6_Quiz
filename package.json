@@ -42,7 +42,7 @@
   },
   "devDependencies": {
     "mocha": "^5.1.1",
-    "sqlite3": "^3.1.13",
+    "sqlite3": "^4.0.0",
     "zombie": "^6.1.2"
   }
 }
