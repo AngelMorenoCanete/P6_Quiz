@@ -100,9 +100,12 @@ exports.edit = (req, res, next) => {
 //Hay que escribir este MW
 exports.update = (req, res, next) => {
     const {tip, body} = req;
-
+    const isAuthor = req.quiz.authorId === req.session.user.id;
     tip.text = body.text;
-    tip.accepted = false; //Porque es aceptada despues por otro usuario
+    
+    if(isAuthor){
+        tip.accepted = false; //Porque es aceptada despues por otro usuario
+    }
 
     tip.save({fields: ["text", "accepted"]}) //Con fields estamos guardando solo esas columnas
     .then(quiz => {
