@@ -1,4 +1,3 @@
-
 <ul>
     <% for (var i in tips) { %>
         <% var tip = tips[i]; %>
@@ -24,6 +23,10 @@
                 <% } %>
 
                 <% if (isAdmin || isQuizAuthor) { %>
+                    <!-- Este anchor es lo que hemos añadido -->
+                    <a href="/quizzes/<%= quizId %>/tips/edit">
+                        <button>Edit</button>
+                    </a>
 
                     <a href="/quizzes/<%= quizId %>/tips/<%= tip.id %>?_method=DELETE">
                         <button>Delete</button>

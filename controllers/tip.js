@@ -75,3 +75,47 @@ exports.destroy = (req, res, next) => {
     .catch(error => next(error));
 };
 
+//Añadimos esto, que lo hemos copiado tal cual del controllers/quiz.js
+// MW that allows actions only if the user logged in is admin or is the author of the quiz.
+exports.adminOrAuthorRequired = (req, res, next) => {
+
+    const isAdmin  = req.session.user.isAdmin;
+    const isAuthor = req.quiz.authorId === req.session.user.id;
+
+    if (isAdmin || isAuthor) {
+        next();
+    } else {
+        console.log('Prohibited operation: The logged in user is not the author of the quiz, nor an administrator.');
+        res.send(403);
+    }
+};
+
+//Hay que escribir este MW
+exports.edit = (req, res, next) => {
+    const {quiz, tip} = req;
+
+    res.render('tips/edit', {quiz, tip});
+}; 
+
+//Hay que escribir este MW
+exports.update = (req, res, next) => {
+    const {tip, body} = req;
+
+    tip.text = body.text;
+    tip.accepted = false; //Porque es aceptada despues por otro usuario
+
+    tip.save({fields: ["text", "accepted"]}) //Con fields estamos guardando solo esas columnas
+    .then(quiz => {
+        req.flash('success', 'Quiz edited successfully.');
+        res.redirect('/quizzes/' + quiz.id);
+    })
+    .catch(Sequelize.ValidationError, error => {
+        req.flash('error', 'There are errors in the form:');
+        error.errors.forEach(({message}) => req.flash('error', message));
+        res.render('tips/edit', {quiz, tip});
+    })
+    .catch(error => {
+        req.flash('error', 'Error editing the Quiz: ' + error.message);
+        next(error);
+    });
+};
